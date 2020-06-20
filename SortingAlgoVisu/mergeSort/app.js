@@ -11,97 +11,110 @@ window.addEventListener('resize',()=>{
     canvas.height = window.innerHeight;
     init();
 });
-let arr = [];
-// let states = [];
-// let sorted = false;
+let array = [];
+let visualArray = [];
+let states = [];
+let sorted = false;
+let nextStart = 0
 
-function init() {
+async function init() {
     context.clearRect(0,0,canvas.width,canvas.height);
-    arr = [];
-    for(let i = 0;i</*canvas.width/1.05*/10;i++) {
-        arr.push(Math.floor(Math.random()*canvas.height)+1);
+    array = [];
+    for(let i = 0;i<canvas.width/1.05;i++) {
+        const num = Math.floor(Math.random()*canvas.height)+1;
+        array.push(num);
+        visualArray.push(num);
     }
-    console.log(arr);
-    let sorted =  mergeSort(arr);
+    await mergeSortArray(array);
     sorted = true;
 }
-init();
 
-function mergeSort(unsortedArray) {
-    if(unsortedArray.length <= 1) return;
-
-    const midIndex = Math.floor(unsortedArray.length/2);
-    const left = unsortedArray.slice(0,midIndex);
-    const right = unsortedArray.slice(midIndex);
-    mergeSort(left);
-    mergeSort(right);
-    merge(left,right);
+async function mergeSortArray(array,previousLeft=0,previousRight=0) {
+    var len = array.length;
+    if (len < 2)
+        return;
+    var middle = len / 2;
+    var left = array.slice(0, middle);
+    var right = array.slice(middle, len);
+    // await Promise.all([
+    nextStart = previousLeft 
+    await mergeSortArray(left,0);
+    nextStart = previousRight
+    await mergeSortArray(right,middle);
+    // ])
+    await mergeArray(left,right,array,middle)
 }
 
-function merge(left,right) {
-    let i=0,j=0,k=0;
-    let l = [];
-    let r = [];
-    let temp = [];
-
-    left.forEach(item=>{
-        l.push(item);
-    });
-    right.forEach(item=>{
-        r.push(item);
-    });
-
-    while(i>l.length || j>r.length) {
-        if(l[i]>=r[j]) {
-            temp.push(l[i]);
-            l.splice(i,1);
+async function mergeArray(left, right, array,middle) {
+    var nL = left.length;
+    var nR = right.length;
+    var i = 0;
+    var j = 0;
+    var k = 0;
+    while (i < nL && j < nR) {
+        if (left[i] <= right[j]) {
+            // array[k] = left[i];
+            await putValue(array,left,k,i);
             i++;
-        } else {
-            temp.push(r[j]);
-            r.splice(j,1);
+        }
+        else {
+            // array[k] = right[j];
+            await putValue(array,right,k,j,middle);
             j++;
         }
         k++;
     }
-    while(l.length) {
-        temp.push(l[i]);
+    
+    while (i < nL) {
+        // array[k] = left[i];
+        await putValue(array,left,k,i);
+        k++;
         i++;
     }
-    while(r.length) {
-        temp.push(l[j]);
+    while (j < nR) {
+        // array[k] = right[j];
+        await putValue(array,right,k,j,middle);
+        k++;
         j++;
     }
-
-    return temp;
 }
 
-// async function swap(arr,i,j) {
-//     await sleep(1);
-//     [arr[i],arr[j]] = [arr[j],arr[i]];
-// }
+init();
 
-// function sleep(ms) {
-//     return new Promise(resolve => setTimeout(resolve,ms));
-// }
 
-// function visualize() {
-//     context.clearRect(0,0,canvas.width,canvas.height);
-//     arr.forEach((number,index)=>{
-//         if(states[index]===0) {
-//             color = '#e76f51';
-//         }else if(states[index]===1) {
-//             color = '#2a9d8f';
-//         }else {
-//             color = '#eee';
-//         }
-//         drawBlock(number,index,color);
-//     });
-//     if(sorted) {
-//         return;
-//     }
-//     requestAnimationFrame(visualize);
-// }
-// visualize();
+async function putValue(array,sec,k,i,middle=null) {
+    await sleep(0);
+    // if(middle) {
+        // visualArray[middle+k+i] = sec[i] 
+    // }else {
+        visualArray[nextStart+k] = sec[i];
+    // }
+    array[k] = sec[i];
+}
+
+async function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve,ms));
+}
+
+function visualize() {
+    context.clearRect(0,0,canvas.width,canvas.height);
+    visualArray.forEach((number,index)=>{
+        // if(states[index]===0) {
+        //     color = '#e76f51';
+        // // }else if(states[index]===1) {
+        // //     color = '#2a9d8f';
+        // }else {
+        //     color = '#eee';
+        // }
+        color = '#eeeeee'
+        drawBlock(number,index,color);
+    });
+    if(sorted) {
+        return;
+    }
+    requestAnimationFrame(visualize);
+}
+visualize();
 
 function drawBlock(number,index,color) {
     context.beginPath();
