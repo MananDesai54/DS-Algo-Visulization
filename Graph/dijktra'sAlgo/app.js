@@ -1,7 +1,7 @@
 function Node(value,dist) {
     this.value = value;
     this.distance = dist;
-    this.parent = null;
+    // this.parent = null;
 }
 let total = Number.MAX_SAFE_INTEGER;
 
@@ -31,7 +31,7 @@ function setEdges(start,end,dist) {
 }
 
 function setNodes(node) {
-    graph.set(node,{nodes:[],position:Number.MAX_SAFE_INTEGER,value:node,searched:false});
+    graph.set(node,{parent:null,nodes:[],path:[],position:Number.MAX_SAFE_INTEGER,value:node,searched:false});
 }
 
 for(let i=0;i<numNodes;i++) {
@@ -41,7 +41,7 @@ edges.forEach(edge=>{
     setEdges(...edge);
 })
 
-let start = 0;
+let start = 1;
 graph.get(start).position = 0;
 graph.get(start).searched = true;
 let unreached = [];
@@ -67,20 +67,31 @@ function sortPlease() {
     }
 } 
 // console.log(unreached)
+// console.log(start)
 while(unreached.length>0) {
     sortPlease();
     const item = unreached.shift();
     const parent = item;
+    // console.log(parent.value)
     graph.get(parent.value).searched = true;
     item.nodes.forEach(node=>{
         {
-            //console.log(node);
+            // console.log(node.value);
             if(parent.position+node.distance<graph.get(node.value).position) {
                 graph.get(node.value).position = parent.position+node.distance;
                 graph.get(node.value).searched = true;
                 unreached.push(graph.get(node.value));
+                graph.get(node.value).parent = parent;
+                // graph.get(parent.value).parent = node;
+                graph.get(node.value).path.push(node.value);
+                let currentParent = parent;
+                while(currentParent) {
+                    graph.get(node.value).path.push(currentParent.value);
+                    currentParent = currentParent.parent;
+                }
+                // console.log(node.value,graph.get(node.value).position);
             }
         }
     })
 }
-console.log(graph);
+// console.log(graph);
