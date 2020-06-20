@@ -41,7 +41,7 @@ edges.forEach(edge=>{
     setEdges(...edge);
 })
 
-let start = 1;
+let start = 0;
 graph.get(start).position = 0;
 graph.get(start).searched = true;
 let unreached = [];
@@ -94,4 +94,4 @@ while(unreached.length>0) {
         }
     })
 }
-// console.log(graph);
+console.log(graph);
