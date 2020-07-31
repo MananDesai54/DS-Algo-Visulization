@@ -45,4 +45,6 @@ function horsePool(string:string,pattern:string) {
 }
 
 horsePool(string,pattern);
-console.log(found);
+console.log(`Total occurrence of pattern ${pattern} is ${found}`);
+
+
